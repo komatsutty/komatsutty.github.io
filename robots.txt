@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: http://komatsutty.com/sitemap.xml
