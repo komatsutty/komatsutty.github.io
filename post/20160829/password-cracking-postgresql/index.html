@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Password Cracking PostgreSQL</title>
+
+  <meta name="author" content="komatsutty" />
+  
+  
+
+  <meta name="generator" content="Hugo 0.17-DEV" />
+
+  <link rel="alternate" href="http://komatsutty.com/index.xml" type="application/rss+xml" title="komatsutty.com">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/main.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/custom.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/pygment_highlights.css" />
+  
+  
+  <meta property="og:title" content="Password Cracking PostgreSQL" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+  <meta property="og:image" content="img/avater-icon.png" />
+  
+</head>
+
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://komatsutty.com/">komatsutty.com</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+          <li>
+          <a title="Blog" href="/">Blog</a>
+  	      </li>
+  	    
+      
+        
+          <li>
+          <a title="About" href="/page/about/">About</a>
+  	      </li>
+  	    
+      
+      </ul>
+    </div>
+
+	<div class="avatar-container">
+	  <div class="avatar-img-border">
+      
+          <a title="komatsutty.com" href="http://komatsutty.com/">
+              <img class="avatar-img" src="http://komatsutty.com/img/avater-icon.png" alt="komatsutty.com" />
+          </a>
+      
+	  </div>
+	</div>
+
+  </div>
+</nav>
+
+
+    <div role="main" class="container main-content">
+
+      
+        
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>Password Cracking PostgreSQL</h1>
+      
+        
+      <h2 class="post-subheading">Create MD5 Hash from username and password strings</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on August 29, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+          <div class="paragraph">
+<p>OS標準のパスワードハッシュ解析について，ウェブ上で多くの記事をみかける。しかし，データベースソフトウェアで使用するパスワードハッシュ解析について言及している記事がみられなかった。ここでは，PostgreSQLのパスワードハッシュ解析方法をまとめておくことにする。</p>
+</div>
+<div class="sect1">
+<h2 id="_">パスワードハッシュ形式</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQLのパスワードハッシュは，ユーザ名とパスワードを連結した文字列を生成元としている。以下に示すように, パスワードの末尾にユーザ名を文字列結合しています。</p>
+</div>
+<div class="quoteblock">
+<div class="title">パスワードハッシュ生成規則</div>
+<blockquote>
+<div class="paragraph">
+<p>md5($password.$username)</p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<div class="title">PostgreSQL公式文書による説明</div>
+<blockquote>
+<div class="paragraph">
+<p>Password (possibly encrypted); null if none. If the password is encrypted, this column will begin with the string md5 followed by a 32-character hexadecimal MD5 hash. The MD5 hash will be of the user&#8217;s password concatenated to their user name. For example, if user joe has password xyzzy, PostgreSQL will store the md5 hash of xyzzyjoe. A password that does not follow that format is assumed to be unencrypted.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; <a href="https://www.postgresql.org/docs/current/static/catalog-pg-authid.htm">PostgreSQL 9.5.4 Documentation</a>
+</div>
+</div>
+<div class="paragraph">
+<p>パスワードハッシュ解析を行うときは，ユーザ名もあわせて必要となることに注意しましょう。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__2">パスワードハッシュの調査</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQLにログインし，ユーザ名・パスワードハッシュを表示する。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>postgres=# SELECT rolname,rolpassword FROM pg_authid;
+ rolname  |             rolpassword
+----------+-------------------------------------
+ masamune | md505d5e01999c1dac7ec161ed66dd6c74c
+ postgres | md53175bce1d3201d16594cebf9d7eb3f9d
+ pgadmin  | md50417620186de1a72f3289e954017f4eb
+(3 rows)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>パスワードハッシュは，接頭辞「md5」を除いた文字列。</p>
+</div>
+<div class="paragraph">
+<p>SELECT文による出力結果を解析に用いてもよいが，ローカルファイルに書き出しておくと加工しやすい。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>postgres=# \COPY (SELECT rolname,rolpassword FROM pg_authid) TO 'export.csv' CSV;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ファイル名は，好きな名前でよい。ここでは，「export.csv」としている。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__3">パスワードハッシュの解析</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://www.openwall.com/john/">John The Ripper</a>を用いて，パスワードハッシュ解析を行う。</p>
+</div>
+<div class="sect2">
+<h3 id="_john_the_ripper">John The Ripperによる解析</h3>
+<div class="paragraph">
+<p>ユーザ名とパスワードハッシュを以下の形式に変換する必要があります。</p>
+</div>
+<div class="listingblock">
+<div class="title">John The Ripperが解析可能な形式</div>
+<div class="content">
+<pre class="highlight"><code>USERNAME:$dynamic_1034$PASSWORD_HASH</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ユーザ名とパスワードを手動整形する。もしくは，CSV形式で出力したファイルを変換します。</p>
+</div>
+<div class="listingblock">
+<div class="title">CSV形式から変換</div>
+<div class="content">
+<pre class="highlight"><code>$ cat export.csv | perl -pe 's/,md5/:\$dynamic_1034\$/g;' &gt; pg_shadow4jtr</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">変換したファイルを確認</div>
+<div class="content">
+<pre class="highlight"><code>$ cat pg_shadow4jtr
+masamune:$dynamic_1034$05d5e01999c1dac7ec161ed66dd6c74c
+postgres:$dynamic_1034$3175bce1d3201d16594cebf9d7eb3f9d
+pgadmin:$dynamic_1034$0417620186de1a72f3289e954017f4eb</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>形式を整えたら，John The Ripperで解析します。</p>
+</div>
+<div class="listingblock">
+<div class="title">Single Crackモード</div>
+<div class="content">
+<pre class="highlight"><code>$ john --single pg_shadow4jtr
+Using default input encoding: UTF-8
+Loaded 3 password hashes with 3 different salts (dynamic_1034 [md5($p.$u) (PostgreSQL MD5) 128/128 AVX 4x3])
+Press 'q' or Ctrl-C to abort, almost any other key for status
+nimdagp          (pgadmin)
+postgres         (postgres)
+2g 0:00:00:00 DONE (2016-08-29 00:36) 100.0g/s 48150p/s 48300c/s 48300C/s masamune1956..masamune1900
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Wordlistモード</div>
+<div class="content">
+<pre class="highlight"><code>$ john --wordlist=katana.list pg_shadow4jtr
+Using default input encoding: UTF-8
+Loaded 3 password hashes with 3 different salts (dynamic_1034 [md5($p.$u) (PostgreSQL MD5) 128/128 AVX 4x3])
+Remaining 1 password hash
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Gorounyuudou     (masamune)
+1g 0:00:00:00 DONE (2016-08-29 00:37) 50.00g/s 50.00p/s 50.00c/s 50.00C/s Gorounyuudou
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">解析結果の確認</div>
+<div class="content">
+<pre class="highlight"><code>$ john --show pg_shadow4jtr
+masamune:Gorounyuudou
+postgres:postgres
+pgadmin:nimdagp
+
+3 password hashes cracked, 0 left</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>解析できた結果が表示されていますね。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__4">補足</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>本稿に用いたツールや参考情報は，以下のとおり。</p>
+</div>
+<div class="sect2">
+<h3 id="__5">参考情報</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.openwall.com/john/">John the Ripper password cracker</a></p>
+</li>
+<li>
+<p><a href="https://github.com/magnumripper/JohnTheRipper">github.com/magnumripper/JohnTheRipper</a></p>
+</li>
+<li>
+<p><a href="http://www.atmarkit.co.jp/ait/articles/0809/24/news142_3.html">PostgreSQLのクライアント認証と暗号化の設定方法</a></p>
+</li>
+<li>
+<p><a href="http://stackoverflow.com/questions/6591678/key-for-decrypt-pg-auth-postgresql">stackoverflow: Key for Decrypt pg_auth Postgresql</a></p>
+</li>
+<li>
+<p><a href="http://stackoverflow.com/questions/14918763/generating-postgresql-user-password">stackoverflow: Generating postgresql user password</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__6">使用ツールについて</h3>
+<div class="paragraph">
+<p>John The Ripperは，GitHub上にある最新ソースからビルドしてください。</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+アーカイブファイル(john-1.8.0-jumbo-1.tar.xz)からビルドしたJohn The Ripperは，dynamic_1034形式による解析に対応していません。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>本稿で使用したソフトウェアは，以下のとおり。</p>
+</div>
+<div class="listingblock">
+<div class="title">John The Ripperバージョン</div>
+<div class="content">
+<pre class="highlight"><code>$ john | head -3
+John the Ripper 1.8.0-jumbo-1-5181-gec1bb74 OMP [linux-gnu 64-bit AVX-ac]
+Copyright (c) 1996-2016 by Solar Designer and others
+Homepage: http://www.openwall.com/john/</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">フォーマット対応状況</div>
+<div class="content">
+<pre class="highlight"><code>$ john --list=subformats | grep 'PostgreSQL MD5'
+UserFormat = dynamic_1034  type = dynamic_1034: md5($p.$u) (PostgreSQL MD5)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+      </article>
+
+      <ul class="pager blog-pager">
+        
+        
+      </ul>
+
+      
+      <div class="disqus-comments">
+        <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'komatsutty';
+    var disqus_identifier = 'http:\/\/komatsutty.com\/post\/20160829\/password-cracking-postgresql\/';
+    var disqus_title = 'Password Cracking PostgreSQL';
+    var disqus_url = 'http:\/\/komatsutty.com\/post\/20160829\/password-cracking-postgresql\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </div>
+      
+
+    </div>
+  </div>
+</div>
+
+      
+
+    </div>
+
+    <footer>
+  <div class="container beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+          <li>
+            <a href="https://github.com/komatsutty" title="GitHub">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://twitter.com/komatsutty" title="Twitter">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+		      
+	    	  
+          
+          
+
+    		  <li>
+      			<a href="http://komatsutty.com/index.xml" title="RSS">
+      			  <span class="fa-stack fa-lg">
+        				<i class="fa fa-circle fa-stack-2x"></i>
+        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      			  </span>
+      			</a>
+    		  </li>		
+
+        </ul>
+        <p class="copyright text-muted">
+    		  komatsutty
+    		  &nbsp;&bull;&nbsp;
+    		  2016
+    		  
+    		  
+    		  &nbsp;&bull;&nbsp;
+    		  <a href="http://komatsutty.com/">komatsutty.com</a>
+    		  
+  	    </p>
+  	        
+    		<p class="theme-by text-muted">
+    		  Theme by
+    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+    		</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="http://komatsutty.com/js/jquery-1.11.2.min.js"></script>
+<script src="http://komatsutty.com/js/bootstrap.min.js"></script>
+<script src="http://komatsutty.com/js/main.js"></script>
+
+
+
+  </body>
+</html>

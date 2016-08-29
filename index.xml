@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>komatsutty.com</title>
+    <link>http://komatsutty.com/</link>
+    <description>Recent content on komatsutty.com</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 29 Aug 2016 05:53:49 +0900</lastBuildDate>
+    <atom:link href="http://komatsutty.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Password Cracking PostgreSQL</title>
+      <link>http://komatsutty.com/post/20160829/password-cracking-postgresql/</link>
+      <pubDate>Mon, 29 Aug 2016 05:53:49 +0900</pubDate>
+      
+      <guid>http://komatsutty.com/post/20160829/password-cracking-postgresql/</guid>
+      <description>&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;OS標準のパスワードハッシュ解析について，ウェブ上で多くの記事をみかける。しかし，データベースソフトウェアで使用するパスワードハッシュ解析について言及している記事がみられなかった。ここでは，PostgreSQLのパスワードハッシュ解析方法をまとめておくことにする。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_&#34;&gt;パスワードハッシュ形式&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;PostgreSQLのパスワードハッシュは，ユーザ名とパスワードを連結した文字列を生成元としている。以下に示すように, パスワードの末尾にユーザ名を文字列結合しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;quoteblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;パスワードハッシュ生成規則&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;md5($password.$username)&lt;/p&gt;
+&lt;/div&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div class=&#34;quoteblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;PostgreSQL公式文書による説明&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;Password (possibly encrypted); null if none. If the password is encrypted, this column will begin with the string md5 followed by a 32-character hexadecimal MD5 hash. The MD5 hash will be of the user&amp;#8217;s password concatenated to their user name. For example, if user joe has password xyzzy, PostgreSQL will store the md5 hash of xyzzyjoe. A password that does not follow that format is assumed to be unencrypted.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;attribution&#34;&gt;
+&amp;#8212; &lt;a href=&#34;https://www.postgresql.org/docs/current/static/catalog-pg-authid.htm&#34;&gt;PostgreSQL 9.5.4 Documentation&lt;/a&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;パスワードハッシュ解析を行うときは，ユーザ名もあわせて必要となることに注意しましょう。&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;__2&#34;&gt;パスワードハッシュの調査&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;PostgreSQLにログインし，ユーザ名・パスワードハッシュを表示する。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;postgres=# SELECT rolname,rolpassword FROM pg_authid;
+ rolname  |             rolpassword
+----------+-------------------------------------
+ masamune | md505d5e01999c1dac7ec161ed66dd6c74c
+ postgres | md53175bce1d3201d16594cebf9d7eb3f9d
+ pgadmin  | md50417620186de1a72f3289e954017f4eb
+(3 rows)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;パスワードハッシュは，接頭辞「md5」を除いた文字列。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;SELECT文による出力結果を解析に用いてもよいが，ローカルファイルに書き出しておくと加工しやすい。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;postgres=# \COPY (SELECT rolname,rolpassword FROM pg_authid) TO &#39;export.csv&#39; CSV;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;ファイル名は，好きな名前でよい。ここでは，「export.csv」としている。&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;__3&#34;&gt;パスワードハッシュの解析&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.openwall.com/john/&#34;&gt;John The Ripper&lt;/a&gt;を用いて，パスワードハッシュ解析を行う。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;_john_the_ripper&#34;&gt;John The Ripperによる解析&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;ユーザ名とパスワードハッシュを以下の形式に変換する必要があります。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;John The Ripperが解析可能な形式&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;USERNAME:$dynamic_1034$PASSWORD_HASH&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;ユーザ名とパスワードを手動整形する。もしくは，CSV形式で出力したファイルを変換します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;CSV形式から変換&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ cat export.csv | perl -pe &#39;s/,md5/:\$dynamic_1034\$/g;&#39; &amp;gt; pg_shadow4jtr&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;変換したファイルを確認&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ cat pg_shadow4jtr
+masamune:$dynamic_1034$05d5e01999c1dac7ec161ed66dd6c74c
+postgres:$dynamic_1034$3175bce1d3201d16594cebf9d7eb3f9d
+pgadmin:$dynamic_1034$0417620186de1a72f3289e954017f4eb&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;形式を整えたら，John The Ripperで解析します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Single Crackモード&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ john --single pg_shadow4jtr
+Using default input encoding: UTF-8
+Loaded 3 password hashes with 3 different salts (dynamic_1034 [md5($p.$u) (PostgreSQL MD5) 128/128 AVX 4x3])
+Press &#39;q&#39; or Ctrl-C to abort, almost any other key for status
+nimdagp          (pgadmin)
+postgres         (postgres)
+2g 0:00:00:00 DONE (2016-08-29 00:36) 100.0g/s 48150p/s 48300c/s 48300C/s masamune1956..masamune1900
+Use the &#34;--show&#34; option to display all of the cracked passwords reliably
+Session completed&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Wordlistモード&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ john --wordlist=katana.list pg_shadow4jtr
+Using default input encoding: UTF-8
+Loaded 3 password hashes with 3 different salts (dynamic_1034 [md5($p.$u) (PostgreSQL MD5) 128/128 AVX 4x3])
+Remaining 1 password hash
+Press &#39;q&#39; or Ctrl-C to abort, almost any other key for status
+Gorounyuudou     (masamune)
+1g 0:00:00:00 DONE (2016-08-29 00:37) 50.00g/s 50.00p/s 50.00c/s 50.00C/s Gorounyuudou
+Use the &#34;--show&#34; option to display all of the cracked passwords reliably
+Session completed&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;解析結果の確認&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ john --show pg_shadow4jtr
+masamune:Gorounyuudou
+postgres:postgres
+pgadmin:nimdagp
+
+3 password hashes cracked, 0 left&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;解析できた結果が表示されていますね。&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;__4&#34;&gt;補足&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;本稿に用いたツールや参考情報は，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__5&#34;&gt;参考情報&lt;/h3&gt;
+&lt;div class=&#34;ulist&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.openwall.com/john/&#34;&gt;John the Ripper password cracker&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/magnumripper/JohnTheRipper&#34;&gt;github.com/magnumripper/JohnTheRipper&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.atmarkit.co.jp/ait/articles/0809/24/news142_3.html&#34;&gt;PostgreSQLのクライアント認証と暗号化の設定方法&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/6591678/key-for-decrypt-pg-auth-postgresql&#34;&gt;stackoverflow: Key for Decrypt pg_auth Postgresql&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/14918763/generating-postgresql-user-password&#34;&gt;stackoverflow: Generating postgresql user password&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__6&#34;&gt;使用ツールについて&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;John The Ripperは，GitHub上にある最新ソースからビルドしてください。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;admonitionblock caution&#34;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class=&#34;icon&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Caution&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class=&#34;content&#34;&gt;
+アーカイブファイル(john-1.8.0-jumbo-1.tar.xz)からビルドしたJohn The Ripperは，dynamic_1034形式による解析に対応していません。
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;本稿で使用したソフトウェアは，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;John The Ripperバージョン&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ john | head -3
+John the Ripper 1.8.0-jumbo-1-5181-gec1bb74 OMP [linux-gnu 64-bit AVX-ac]
+Copyright (c) 1996-2016 by Solar Designer and others
+Homepage: http://www.openwall.com/john/&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;フォーマット対応状況&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ john --list=subformats | grep &#39;PostgreSQL MD5&#39;
+UserFormat = dynamic_1034  type = dynamic_1034: md5($p.$u) (PostgreSQL MD5)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
