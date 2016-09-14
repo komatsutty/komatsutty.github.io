@@ -1,0 +1,6 @@
+HTTPステータス,恒久的/一時的,Request Methodの変更,定義元
+301 Moved Permanently,Permanent,変更可,RFC7231
+302 Found,Temporary,変更可,RFC7231
+303 See Other,Temporary,変更必須,RFC7231
+307 Temporary Redirect,Temporary,変更不可,RFC7231
+308 Permanent Redirect,Permanent,変更不可,RFC7538

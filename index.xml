@@ -6,8 +6,879 @@
     <description>Recent content on komatsutty.com</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Aug 2016 05:53:49 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 15 Sep 2016 04:22:08 +0900</lastBuildDate>
     <atom:link href="http://komatsutty.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>URL Redirection</title>
+      <link>http://komatsutty.com/post/20160915/url-redirection/</link>
+      <pubDate>Thu, 15 Sep 2016 04:22:08 +0900</pubDate>
+      
+      <guid>http://komatsutty.com/post/20160915/url-redirection/</guid>
+      <description>&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;URLリダイレクトの方法は，数種類ある。それぞれ特色があるため，環境によって使い分けが必要です。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;_redirection_method&#34;&gt;Redirection Method&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;本稿では，以下の4種類の手法を紹介します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;ulist&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;METAタグによるリダイレクト&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;JavaScriptによるリダイレクト&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;CGIによるリダイレクト&lt;/p&gt;
+&lt;div class=&#34;ulist&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Perlによる実装&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;PHPによる実装&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ウェブサーバの機能によるリダイレクト&lt;/p&gt;
+&lt;div class=&#34;ulist&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;mod alias機能&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;mod rewrite機能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;_http&#34;&gt;HTTPステータス&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;HTTPステータスコードは，クライアントへ転送事由伝達のために使用する。
+リダイレクトに使用するHTTPステータスコードは，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 1. HTTP Status Code&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;HTTPステータス&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;恒久的/一時的&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;定義元&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;301 Moved Permanently&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Permanent&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;RFC7231&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;302 Found&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Temporary&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;RFC7231&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;303 See Other&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Temporary&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;RFC7231&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;307 Temporary Redirect&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Temporary&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;RFC7231&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;308 Permanent Redirect&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Permanent&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;RFC7538&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;リダイレクト動作時に，動詞をPOSTからGETへ変更できるステータスに規定があることに注意する。この制限事項は，RFC7538にて規定されている。以下に引用する。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;quoteblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;RFC7538 - Section 1 (Introductionより)&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;Section 6.4.7 of [RFC7231] states that it does not define a permanent
+variant of status code 307; this specification adds the status code
+308, defining this missing variant (Section 3).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div class=&#34;quoteblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;RFC7538 - Section 3 (308 Permanent Redirectより)&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;This status code is similar to 301 (Moved Permanently)
+([RFC7231], Section 6.4.2), except that it does not allow changing
+the request method from POST to GET.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;上記のことから，同RFC記載の表に加筆したものは，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 2. RFC7538 - 筆者による修正加筆&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;Permanent&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;Temporary&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Allows changing the request method from POST to GET&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;301&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;302&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;Does not allow changing the request method from POST to GET&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;308&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;307&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;_&#34;&gt;検証条件&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;本稿における検証時の転送設定条件は以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 3. 転送設定情報&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:50%;&#34;&gt;
+&lt;col style=&#34;width:50%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;転送元&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;転送先&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;phoenix.komatsutty.local&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;komatsutty.com&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;&lt;code&gt;DirectoryIndex&lt;/code&gt;ディレクティブは，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;DirectoryIndex index.html index.fcgi index.cgi index.pl index.php index.xhtml index.htm&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_meta&#34;&gt;METAタグによるリダイレクト&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;HTMLファイルに記載することで転送設定可能&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;転送前に待機する時間を指定可能。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ファイルにアクセス時に，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;HTTPステータスコードによる転送事由通知を行えない&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__2&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;HTMLファイルにて，&lt;code&gt;Meta&lt;/code&gt;タグを使用する。&lt;br&gt;
+&lt;code&gt;http-equiv&lt;/code&gt;要素には，&lt;code&gt;refresh&lt;/code&gt;を指定し，&lt;code&gt;content&lt;/code&gt;要素内には，&lt;code&gt;ページ待機時間&lt;/code&gt;および&lt;code&gt;転送先&lt;/code&gt;を記載する。下記例では，ページ待機時間として&lt;code&gt;0sec&lt;/code&gt;を指定。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;ファイル記述例&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;&amp;lt;meta http-equiv=&#34;refresh&#34; content=&#34;0; URL=http://komatsutty.com:80/&#34;/&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__3&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-meta/index.html&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-meta/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;html language-html&#34;&gt;HTTP/1.1 200 OK
+Date: Sun, 11 Sep 2016 11:33:17 GMT
+Server: Apache/2.4.10
+Last-Modified: Sun, 11 Sep 2016 00:38:19 GMT
+Accept-Ranges: bytes
+Content-Length: 418
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html
+
+&amp;lt;!DOCTYPE html PUBLIC &#34;-//W3C//DTD XHTML 1.0 Transitional//EN&#34; &#34;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#34;&amp;gt;
+&amp;lt;html xmlns=&#34;http://www.w3.org/1999/xhtml&#34;&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;title&amp;gt;REDIRECT TEST(Meta Refresh)&amp;lt;/title&amp;gt;
+  &amp;lt;meta http-equiv=&#34;content-type&#34; content=&#34;text/html; charset=utf-8&#34;/&amp;gt;
+  &amp;lt;meta http-equiv=&#34;refresh&#34; content=&#34;0; URL=http://komatsutty.com:80/&#34;/&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;REDIRECT TEST PAGE&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_javascript&#34;&gt;JavaScriptによるリダイレクト&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;ファイルアクセス時に，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ブラウザにてJavaScript有効時，転送可能&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;HTTPステータスコードによる転送事由通知を行えない&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__4&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;&lt;code&gt;location&lt;/code&gt;オブジェクトの&lt;code&gt;href&lt;/code&gt;プロパティに転送先を指定することで実装可能です。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;ファイル記述例&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;javascript language-javascript&#34;&gt;location.href = &#39;http://komatsutty.com:80/&#39;;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__5&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-javascript/index.html&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-javascript/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;html language-html&#34;&gt;HTTP/1.1 200 OK
+Date: Sun, 11 Sep 2016 12:30:44 GMT
+Server: Apache/2.4.10
+Last-Modified: Sun, 11 Sep 2016 00:37:01 GMT
+Accept-Ranges: bytes
+Content-Length: 453
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html
+
+&amp;lt;!DOCTYPE html PUBLIC &#34;-//W3C//DTD XHTML 1.0 Transitional//EN&#34; &#34;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&#34;&amp;gt;
+&amp;lt;html xmlns=&#34;http://www.w3.org/1999/xhtml&#34;&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;title&amp;gt;REDIRECT TEST(Javascript)&amp;lt;/title&amp;gt;
+  &amp;lt;meta http-equiv=&#34;content-type&#34; content=&#34;text/html; charset=utf-8&#34;/&amp;gt;
+  &amp;lt;script type=&#34;text/javascript&#34; charset=&#34;utf-8&#34;&amp;gt;
+    location.href = &#39;http://komatsutty.com:80/&#39;;
+  &amp;lt;/script&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;REDIRECT TEST PAGE&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_cgi_perl&#34;&gt;CGIによるリダイレクト - Perlによる実装&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;ファイルアクセス時に，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ウェブサーバ上にて実行可能な言語で実装可能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__6&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;Perlでは，以下のように&lt;code&gt;CGI::Fast&lt;/code&gt;で実装できます。&lt;code&gt;CGI&lt;/code&gt;モジュールも対応しています。
+Perl以外にも，PHPやPythonでも実装可能です。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;index.fcgi&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;perl language-perl&#34;&gt;#!/usr/bin/env perl
+use strict;
+use warnings;
+use CGI::Fast qw/:standard/;
+
+my $uri = &#39;http://komatsutty.com:80/&#39;;
+
+my $q = new CGI::Fast;
+print $q-&amp;gt;redirect(-uri =&amp;gt; $uri, -status =&amp;gt; 302);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 4. &lt;code&gt;-status&lt;/code&gt;に指定可能なステータスコード&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;ステータスコード&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;指定の可否&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;特記事項&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;301&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;302&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;未指定時の挙動&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;303&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;307&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;308&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__7&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-perl/index.fcgi&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-perl/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:32:06 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 0
+Connection: close&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_cgi_php&#34;&gt;CGIによるリダイレクト - PHPによる実装&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;ファイルにアクセス時に，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ウェブサーバ上で実行可能な言語で実装可能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__8&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;PHPでは，以下のように&lt;code&gt;header&lt;/code&gt;関数で実装できます。&lt;code&gt;header&lt;/code&gt;関数にて，&lt;code&gt;Location&lt;/code&gt;ヘッダを指定可能です。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;index.php&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;php language-php&#34;&gt;&amp;lt;?php
+    header(&#39;HTTP/1.1 302 Found&#39;);
+    header(&#39;Location: http://komatsutty.com:80/&#39;);
+    exit();
+?&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;admonitionblock caution&#34;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class=&#34;icon&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Caution&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class=&#34;content&#34;&gt;
+&lt;code&gt;header&lt;/code&gt;関数は，すべての実際の出力の前に呼び出す必要があります。&lt;code&gt;header&lt;/code&gt;関数呼び出し以前にHTMLによる記述は，行うことができません。
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__9&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-php5/index.php&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-php5/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;HTTP/1.1 302 Found
+Date: Wed, 14 Sep 2016 17:29:28 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 0
+Content-Type: text/html; charset=UTF-8&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_mod_alias&#34;&gt;mod aliasによるリダイレクト&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;正規表現にマッチした場合，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Apache HTTP ServerおよびModule Aliasを必要とする&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;自動転送ができなかった場合を考慮した手動転送情報を自動生成する&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__10&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;&lt;code&gt;Redirect&lt;/code&gt;ディレクティブを用いることで，転送可能です。このディレクティブは，Apache HTTP Serverの設定ファイル，または&lt;code&gt;.htaccess&lt;/code&gt;に記載します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;ファイル記述例&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;Redirect temp /redirect-modalias/ http://komatsutty.com:80/&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;admonitionblock caution&#34;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class=&#34;icon&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Caution&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class=&#34;content&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;注意&lt;/div&gt;
+&lt;code&gt;.htaccess&lt;/code&gt;による制御を行う場合，&lt;code&gt;Override&lt;/code&gt;ディレクティブにて許可されている必要があります。&lt;code&gt;Override FileInfo&lt;/code&gt;にて許可できます。
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;文法は，Apache HTTP Serverドキュメントに記載されているとおり。以下は，引用。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Syntax - Redirectディレクティブ&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;Redirect [status] URL-path URL&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 5. &lt;code&gt;status&lt;/code&gt;引数に指定可能な情報&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:50%;&#34;&gt;
+&lt;col style=&#34;width:50%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;status引数&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;HTTPステータスコード&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;permanent&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;301&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;temp&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;302&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;seeother&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;303&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;gone&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;410&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;&lt;code&gt;Redirect&lt;/code&gt;ディレクティブにおける&lt;code&gt;URL-Path&lt;/code&gt;は，先頭からのマッチを行います。正規表現によるURLのパスの判定を行う場合は，&lt;code&gt;RedirectMatch&lt;/code&gt;ディレクティブを使用します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Syntax - RedirectMatchディレクティブ&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;RedirectMatch [status] regex URL&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__11&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-modalias/.htaccess&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-modalias/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;html language-html&#34;&gt;HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:32:48 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 290
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+&amp;lt;!DOCTYPE HTML PUBLIC &#34;-//IETF//DTD HTML 2.0//EN&#34;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;
+&amp;lt;title&amp;gt;302 Found&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;
+&amp;lt;h1&amp;gt;Found&amp;lt;/h1&amp;gt;
+&amp;lt;p&amp;gt;The document has moved &amp;lt;a href=&#34;http://komatsutty.com:80/&#34;&amp;gt;here&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
+&amp;lt;hr&amp;gt;
+&amp;lt;address&amp;gt;Apache/2.4.10 Server at phoenix.komatsutty.local Port 80&amp;lt;/address&amp;gt;
+&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;_mod_rewrite&#34;&gt;mod rewriteによるリダイレクト&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下の特徴をもつ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;olist arabic&#34;&gt;
+&lt;ol class=&#34;arabic&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;正規表現にマッチした場合，転送させることができる&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Apache HTTP ServerおよびModule Rewriteを必要とする&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;自動転送ができなかった場合を考慮した手動転送情報を自動生成する&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__12&#34;&gt;実装方法&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;変数&lt;code&gt;REQUEST_URI&lt;/code&gt;にクライアントのアクセスした&lt;code&gt;PATH&lt;/code&gt;が格納されます。この変数とマッチする正規表現を記載することで実装できます。
+このディレクティブは，Apache HTTP Serverの設定ファイル，または&lt;code&gt;.htaccess&lt;/code&gt;に記載します。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;ファイル記述例&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;RewriteEngine On
+RewriteBase /redirect-modrewrite/
+RewriteCond %{REQUEST_URI} ^/redirect-modrewrite/.*$ [nocase]
+RewriteRule ^(.*)$ http://komatsutty.com:80/ [redirect=302,last]&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;admonitionblock caution&#34;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class=&#34;icon&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Caution&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class=&#34;content&#34;&gt;
+フラグ&lt;code&gt;nocase&lt;/code&gt;は，大文字小文字を無視します。フラグ&lt;code&gt;last&lt;/code&gt;は，ルールにマッチした場合，以降のルールを評価しません。
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;文法は，Apache HTTP Serverドキュメントに記載されているとおり。以下は，引用。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Syntax&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;RewriteCond TestString CondPattern [flags]&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;フラグ&lt;code&gt;redirect&lt;/code&gt;は，HTTPステータスコードを指定可能です。指定可能なHTTPステータスコードは，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&#34;tableblock frame-all grid-all&#34; style=&#34;width:100%; &#34;&gt;
+&lt;caption class=&#34;title&#34;&gt;Table 6. フラグ&lt;code&gt;redirect&lt;/code&gt;に指定可能なステータスコード&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt;
+&lt;col style=&#34;width:33%;&#34;&gt; 
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;ステータスコード&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;指定の可否&lt;/th&gt;
+&lt;th class=&#34;tableblock halign-left valign-top&#34;&gt;特記事項&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;301&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;302&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;未指定時の挙動&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;303&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;307&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;308&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;○&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&#34;tableblock halign-left valign-top&#34;&gt;&lt;p class=&#34;tableblock&#34;&gt;-&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__13&#34;&gt;検証結果&lt;/h3&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;以下は，ドキュメントルート配下に&lt;code&gt;/redirect-modrewrite/.htaccess&lt;/code&gt;を設置し，検証しています。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Request&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;GET /redirect-modrewrite/ HTTP/1.0
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;HTTP Response&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code class=&#34;html language-html&#34;&gt;HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:33:16 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 290
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+&amp;lt;!DOCTYPE HTML PUBLIC &#34;-//IETF//DTD HTML 2.0//EN&#34;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;
+&amp;lt;title&amp;gt;302 Found&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;
+&amp;lt;h1&amp;gt;Found&amp;lt;/h1&amp;gt;
+&amp;lt;p&amp;gt;The document has moved &amp;lt;a href=&#34;http://komatsutty.com:80/&#34;&amp;gt;here&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
+&amp;lt;hr&amp;gt;
+&amp;lt;address&amp;gt;Apache/2.4.10 Server at phoenix.komatsutty.local Port 80&amp;lt;/address&amp;gt;
+&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect1&#34;&gt;
+&lt;h2 id=&#34;__14&#34;&gt;補足&lt;/h2&gt;
+&lt;div class=&#34;sectionbody&#34;&gt;
+&lt;div class=&#34;paragraph&#34;&gt;
+&lt;p&gt;本稿に用いたツールや参考情報は，以下のとおり。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__15&#34;&gt;参考情報&lt;/h3&gt;
+&lt;div class=&#34;ulist&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc2616&#34;&gt;RFC2616: Hypertext Transfer Protocol&amp;#8201;&amp;#8212;&amp;#8201;HTTP/1.1&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc7231&#34;&gt;RFC7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc7234&#34;&gt;RFC7234:  Hypertext Transfer Protocol (HTTP/1.1): Caching&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://tools.ietf.org/html/rfc7538&#34;&gt;RFC7538: The Hypertext Transfer Protocol Status Code 308 (Permanent Redirect)&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/List_of_HTTP_status_codes&#34;&gt;Wikipedia: List of HTTP status codes&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/URL_redirection&#34;&gt;Wikipedia: URL redirection&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://wiki.apache.org/httpd/RewriteCond&#34;&gt;http://wiki.apache.org/httpd/RewriteCond&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://httpd.apache.org/docs/current/en/mod/mod_alias.html&#34;&gt;Apache Module mod_alias&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://httpd.apache.org/docs/current/en/mod/mod_rewrite.html&#34;&gt;Apache Module mod_rewrite&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://httpd.apache.org/docs/current/en/rewrite/flags.html#flag_r&#34;&gt;Apache Module mod_rewrite: R|redirect&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.w3.org/TR/WCAG-TECHS/H76.html&#34;&gt;H76: Using meta refresh to create an instant client-side redirect&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20160317/SVR1&#34;&gt;SVR1: Implementing automatic redirects on the server side instead of on the client side&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://php.net/manual/ja/function.header.php&#34;&gt;http://php.net/manual/ja/function.header.php&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;sect2&#34;&gt;
+&lt;h3 id=&#34;__16&#34;&gt;実行環境&lt;/h3&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Debian 8.5&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ lsb_release -a
+No LSB modules are available.
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 8.5 (jessie)
+Release:	8.5
+Codename:	jessie&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;listingblock&#34;&gt;
+&lt;div class=&#34;title&#34;&gt;Apache 2.4.10&lt;/div&gt;
+&lt;div class=&#34;content&#34;&gt;
+&lt;pre class=&#34;highlight&#34;&gt;&lt;code&gt;$ /usr/sbin/apache2ctl -v
+Server version: Apache/2.4.10 (Debian)
+Server built:   Jul 20 2016 06:48:18&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Password Cracking PostgreSQL</title>

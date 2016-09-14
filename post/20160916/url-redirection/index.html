@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>URL Redirection</title>
+
+  <meta name="author" content="komatsutty" />
+  
+  
+
+  <meta name="generator" content="Hugo 0.17-DEV" />
+
+  <link rel="alternate" href="http://komatsutty.com/index.xml" type="application/rss+xml" title="komatsutty.com">
+
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/main.css" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/custom.css" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="http://komatsutty.com/css/pygment_highlights.css" />
+  
+  
+  <meta property="og:title" content="URL Redirection" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+  <meta property="og:image" content="img/avater-icon.png" />
+  
+</head>
+
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://komatsutty.com/">komatsutty.com</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+          <li>
+          <a title="Blog" href="/">Blog</a>
+  	      </li>
+  	    
+      
+        
+          <li>
+          <a title="About" href="/page/about/">About</a>
+  	      </li>
+  	    
+      
+      </ul>
+    </div>
+
+	<div class="avatar-container">
+	  <div class="avatar-img-border">
+      
+          <a title="komatsutty.com" href="http://komatsutty.com/">
+              <img class="avatar-img" src="http://komatsutty.com/img/avater-icon.png" alt="komatsutty.com" />
+          </a>
+      
+	  </div>
+	</div>
+
+  </div>
+</nav>
+
+
+    <div role="main" class="container main-content">
+
+      
+        
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="post-heading">
+          <h1>URL Redirection</h1>
+      
+        
+      <h2 class="post-subheading">How to redirect HTTP Request</h2>
+      
+      
+      
+      
+      <span class="post-meta">Posted on September 15, 2016</span>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+          <div class="paragraph">
+<p>URLリダイレクトの方法は，数種類ある。それぞれ特色があるため，環境によって使い分けが必要です。</p>
+</div>
+<div class="sect2">
+<h3 id="_redirection_method">Redirection Method</h3>
+<div class="paragraph">
+<p>本稿では，以下の4種類の手法を紹介します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>METAタグによるリダイレクト</p>
+</li>
+<li>
+<p>JavaScriptによるリダイレクト</p>
+</li>
+<li>
+<p>CGIによるリダイレクト</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Perlによる実装</p>
+</li>
+<li>
+<p>PHPによる実装</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>ウェブサーバの機能によるリダイレクト</p>
+<div class="ulist">
+<ul>
+<li>
+<p>mod alias機能</p>
+</li>
+<li>
+<p>mod rewrite機能</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_http">HTTPステータス</h3>
+<div class="paragraph">
+<p>HTTPステータスコードは，クライアントへ転送事由伝達のために使用する。
+リダイレクトに使用するHTTPステータスコードは，以下のとおり。</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 1. HTTP Status Code(RFC2616)</caption>
+<colgroup>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTPステータス</th>
+<th class="tableblock halign-left valign-top">恒久的/一時的</th>
+<th class="tableblock halign-left valign-top">定義元</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">301 Moved Permanently</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permanent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RFC7231</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302 Found</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RFC7231</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">303 See Other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RFC7231</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">307 Temporary Redirect</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RFC7231</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">308 Permanent Redirect</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Permanent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RFC7538</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="paragraph">
+<p>リダイレクト動作時に，動詞をPOSTからGETへ変更できるステータスに規定があることに注意する。この制限事項は，RFC7538にて規定されている。以下に引用する。</p>
+</div>
+<div class="quoteblock">
+<div class="title">RFC7538 - Section 1 (Introductionより)</div>
+<blockquote>
+<div class="paragraph">
+<p>Section 6.4.7 of [RFC7231] states that it does not define a permanent
+variant of status code 307; this specification adds the status code
+308, defining this missing variant (Section 3).</p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<div class="title">RFC7538 - Section 3 (308 Permanent Redirectより)</div>
+<blockquote>
+<div class="paragraph">
+<p>This status code is similar to 301 (Moved Permanently)
+([RFC7231], Section 6.4.2), except that it does not allow changing
+the request method from POST to GET.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>上記のことから，同RFC記載の表に加筆したものは，以下のとおり。</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 2. RFC7538 - 筆者による修正加筆</caption>
+<colgroup>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top">Permanent</th>
+<th class="tableblock halign-left valign-top">Temporary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows changing the request method from POST to GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">301</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Does not allow changing the request method from POST to GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">308</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">307</p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<div class="sect2">
+<h3 id="_">検証条件</h3>
+<div class="paragraph">
+<p>本稿における検証時の転送設定条件は以下のとおり。</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 3. 転送設定情報</caption>
+<colgroup>
+<col style="width:50%;">
+<col style="width:50%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">転送元</th>
+<th class="tableblock halign-left valign-top">転送先</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">phoenix.komatsutty.local</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">komatsutty.com</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="paragraph">
+<p><code>DirectoryIndex</code>ディレクティブは，以下のとおり。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>DirectoryIndex index.html index.fcgi index.cgi index.pl index.php index.xhtml index.htm</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_meta">METAタグによるリダイレクト</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>HTMLファイルに記載することで転送設定可能</p>
+</li>
+<li>
+<p>転送前に待機する時間を指定可能。</p>
+</li>
+<li>
+<p>ファイルにアクセス時に，転送させることができる</p>
+</li>
+<li>
+<p>HTTPステータスコードによる転送事由通知を行えない</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__2">実装方法</h3>
+<div class="paragraph">
+<p>HTMLファイルにて，<code>Meta</code>タグを使用する。<br>
+<code>http-equiv</code>要素には，<code>refresh</code>を指定し，<code>content</code>要素内には，<code>ページ待機時間</code>および<code>転送先</code>を記載する。下記例では，ページ待機時間として<code>0sec</code>を指定。</p>
+</div>
+<div class="listingblock">
+<div class="title">ファイル記述例</div>
+<div class="content">
+<pre class="highlight"><code>&lt;meta http-equiv="refresh" content="0; URL=http://komatsutty.com:80/"/&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__3">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-meta/index.html</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-meta/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">HTTP/1.1 200 OK
+Date: Sun, 11 Sep 2016 11:33:17 GMT
+Server: Apache/2.4.10
+Last-Modified: Sun, 11 Sep 2016 00:38:19 GMT
+Accept-Ranges: bytes
+Content-Length: 418
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html
+
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+  &lt;title&gt;REDIRECT TEST(Meta Refresh)&lt;/title&gt;
+  &lt;meta http-equiv="content-type" content="text/html; charset=utf-8"/&gt;
+  &lt;meta http-equiv="refresh" content="0; URL=http://komatsutty.com:80/"/&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;p&gt;REDIRECT TEST PAGE&lt;/p&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_javascript">JavaScriptによるリダイレクト</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>ファイルアクセス時に，転送させることができる</p>
+</li>
+<li>
+<p>ブラウザにてJavaScript有効時，転送可能</p>
+</li>
+<li>
+<p>HTTPステータスコードによる転送事由通知を行えない</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__4">実装方法</h3>
+<div class="paragraph">
+<p><code>location</code>オブジェクトの<code>href</code>プロパティに転送先を指定することで実装可能です。</p>
+</div>
+<div class="listingblock">
+<div class="title">ファイル記述例</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">location.href = 'http://komatsutty.com:80/';</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__5">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-javascript/index.html</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-javascript/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">HTTP/1.1 200 OK
+Date: Sun, 11 Sep 2016 12:30:44 GMT
+Server: Apache/2.4.10
+Last-Modified: Sun, 11 Sep 2016 00:37:01 GMT
+Accept-Ranges: bytes
+Content-Length: 453
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html
+
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+  &lt;title&gt;REDIRECT TEST(Javascript)&lt;/title&gt;
+  &lt;meta http-equiv="content-type" content="text/html; charset=utf-8"/&gt;
+  &lt;script type="text/javascript" charset="utf-8"&gt;
+    location.href = 'http://komatsutty.com:80/';
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;p&gt;REDIRECT TEST PAGE&lt;/p&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cgi_perl">CGIによるリダイレクト - Perlによる実装</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>ファイルアクセス時に，転送させることができる</p>
+</li>
+<li>
+<p>ウェブサーバ上にて実行可能な言語で実装可能</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__6">実装方法</h3>
+<div class="paragraph">
+<p>Perlでは，以下のように<code>CGI::Fast</code>で実装できます。<code>CGI</code>モジュールも対応しています。
+Perl以外にも，PHPやPythonでも実装可能です。</p>
+</div>
+<div class="listingblock">
+<div class="title">index.fcgi</div>
+<div class="content">
+<pre class="highlight"><code class="perl language-perl">#!/usr/bin/env perl
+use strict;
+use warnings;
+use CGI::Fast qw/:standard/;
+
+my $uri = 'http://komatsutty.com:80/';
+
+my $q = new CGI::Fast;
+print $q-&gt;redirect(-uri =&gt; $uri, -status =&gt; 302);</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 4. <code>-status</code>に指定可能なステータスコード</caption>
+<colgroup>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ステータスコード</th>
+<th class="tableblock halign-left valign-top">指定の可否</th>
+<th class="tableblock halign-left valign-top">特記事項</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">301</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">未指定時の挙動</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">303</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">307</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">308</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<div class="sect2">
+<h3 id="__7">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-perl/index.fcgi</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-perl/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code>HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:32:06 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 0
+Connection: close</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cgi_php">CGIによるリダイレクト - PHPによる実装</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>ファイルにアクセス時に，転送させることができる</p>
+</li>
+<li>
+<p>ウェブサーバ上で実行可能な言語で実装可能</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__8">実装方法</h3>
+<div class="paragraph">
+<p>PHPでは，以下のように<code>header</code>関数で実装できます。<code>header</code>関数にて，<code>Location</code>ヘッダを指定可能です。</p>
+</div>
+<div class="listingblock">
+<div class="title">index.php</div>
+<div class="content">
+<pre class="highlight"><code class="php language-php">&lt;?php
+    header('HTTP/1.1 302 Found');
+    header('Location: http://komatsutty.com:80/');
+    exit();
+?&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+<code>header</code>関数は，すべての実際の出力の前に呼び出す必要があります。<code>header</code>関数呼び出し以前にHTMLによる記述は，行うことができません。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__9">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-php5/index.php</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-php5/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code>HTTP/1.1 302 Found
+Date: Wed, 14 Sep 2016 17:29:28 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 0
+Content-Type: text/html; charset=UTF-8</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mod_alias">mod aliasによるリダイレクト</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>正規表現にマッチした場合，転送させることができる</p>
+</li>
+<li>
+<p>Apache HTTP ServerおよびModule Aliasを必要とする</p>
+</li>
+<li>
+<p>自動転送ができなかった場合を考慮した手動転送情報を自動生成する</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__10">実装方法</h3>
+<div class="paragraph">
+<p><code>Redirect</code>ディレクティブを用いることで，転送可能です。このディレクティブは，Apache HTTP Serverの設定ファイル，または<code>.htaccess</code>に記載します。</p>
+</div>
+<div class="listingblock">
+<div class="title">ファイル記述例</div>
+<div class="content">
+<pre class="highlight"><code>Redirect temp /redirect-modalias/ http://komatsutty.com:80/</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+<div class="title">注意</div>
+<code>.htaccess</code>による制御を行う場合，<code>Override</code>ディレクティブにて許可されている必要があります。<code>Override FileInfo</code>にて許可できます。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>文法は，Apache HTTP Serverドキュメントに記載されているとおり。以下は，引用。</p>
+</div>
+<div class="listingblock">
+<div class="title">Syntax - Redirectディレクティブ</div>
+<div class="content">
+<pre class="highlight"><code>Redirect [status] URL-path URL</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 5. <code>status</code>引数に指定可能な情報</caption>
+<colgroup>
+<col style="width:50%;">
+<col style="width:50%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">status引数</th>
+<th class="tableblock halign-left valign-top">HTTPステータスコード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">permanent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">301</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">temp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">seeother</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">303</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gone</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">410</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="paragraph">
+<p><code>Redirect</code>ディレクティブにおける<code>URL-Path</code>は，先頭からのマッチを行います。正規表現によるURLのパスの判定を行う場合は，<code>RedirectMatch</code>ディレクティブを使用します。</p>
+</div>
+<div class="listingblock">
+<div class="title">Syntax - RedirectMatchディレクティブ</div>
+<div class="content">
+<pre class="highlight"><code>RedirectMatch [status] regex URL</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__11">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-modalias/.htaccess</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-modalias/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:32:48 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 290
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;302 Found&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Found&lt;/h1&gt;
+&lt;p&gt;The document has moved &lt;a href="http://komatsutty.com:80/"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;address&gt;Apache/2.4.10 Server at phoenix.komatsutty.local Port 80&lt;/address&gt;
+&lt;/body&gt;&lt;/html&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mod_rewrite">mod rewriteによるリダイレクト</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>以下の特徴をもつ。</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>正規表現にマッチした場合，転送させることができる</p>
+</li>
+<li>
+<p>Apache HTTP ServerおよびModule Rewriteを必要とする</p>
+</li>
+<li>
+<p>自動転送ができなかった場合を考慮した手動転送情報を自動生成する</p>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="__12">実装方法</h3>
+<div class="paragraph">
+<p>変数<code>REQUEST_URI</code>にクライアントのアクセスした<code>PATH</code>が格納されます。この変数とマッチする正規表現を記載することで実装できます。
+このディレクティブは，Apache HTTP Serverの設定ファイル，または<code>.htaccess</code>に記載します。</p>
+</div>
+<div class="listingblock">
+<div class="title">ファイル記述例</div>
+<div class="content">
+<pre class="highlight"><code>RewriteEngine On
+RewriteBase /redirect-modrewrite/
+RewriteCond %{REQUEST_URI} ^/redirect-modrewrite/.*$ [nocase]
+RewriteRule ^(.*)$ http://komatsutty.com:80/ [redirect=302,last]</code></pre>
+</div>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Caution</div>
+</td>
+<td class="content">
+フラグ<code>nocase</code>は，大文字小文字を無視します。フラグ<code>last</code>は，ルールにマッチした場合，以降のルールを評価しません。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>文法は，Apache HTTP Serverドキュメントに記載されているとおり。以下は，引用。</p>
+</div>
+<div class="listingblock">
+<div class="title">Syntax</div>
+<div class="content">
+<pre class="highlight"><code>RewriteCond TestString CondPattern [flags]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>フラグ<code>redirect</code>は，HTTPステータスコードを指定可能です。指定可能なHTTPステータスコードは，以下のとおり。</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<caption class="title">Table 6. フラグ<code>redirect</code>に指定可能なステータスコード</caption>
+<colgroup>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ステータスコード</th>
+<th class="tableblock halign-left valign-top">指定の可否</th>
+<th class="tableblock halign-left valign-top">特記事項</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">301</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">未指定時の挙動</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">303</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">307</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">308</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">○</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<div class="sect2">
+<h3 id="__13">検証結果</h3>
+<div class="paragraph">
+<p>以下は，ドキュメントルート配下に<code>/redirect-modrewrite/.htaccess</code>を設置し，検証しています。</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Request</div>
+<div class="content">
+<pre class="highlight"><code>GET /redirect-modrewrite/ HTTP/1.0
+
+</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">HTTP Response</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">HTTP/1.1 302 Found
+Date: Sun, 11 Sep 2016 12:33:16 GMT
+Server: Apache/2.4.10
+Location: http://komatsutty.com:80/
+Content-Length: 290
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;302 Found&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Found&lt;/h1&gt;
+&lt;p&gt;The document has moved &lt;a href="http://komatsutty.com:80/"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;address&gt;Apache/2.4.10 Server at phoenix.komatsutty.local Port 80&lt;/address&gt;
+&lt;/body&gt;&lt;/html&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__14">補足</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>本稿に用いたツールや参考情報は，以下のとおり。</p>
+</div>
+<div class="sect2">
+<h3 id="__15">参考情報</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc2616">RFC2616: Hypertext Transfer Protocol&#8201;&#8212;&#8201;HTTP/1.1</a></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc7231">RFC7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc7234">RFC7234:  Hypertext Transfer Protocol (HTTP/1.1): Caching</a></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc7538">RFC7538: The Hypertext Transfer Protocol Status Code 308 (Permanent Redirect)</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">Wikipedia: List of HTTP status codes</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/URL_redirection">Wikipedia: URL redirection</a></p>
+</li>
+<li>
+<p><a href="http://wiki.apache.org/httpd/RewriteCond">http://wiki.apache.org/httpd/RewriteCond</a></p>
+</li>
+<li>
+<p><a href="https://httpd.apache.org/docs/current/en/mod/mod_alias.html">Apache Module mod_alias</a></p>
+</li>
+<li>
+<p><a href="https://httpd.apache.org/docs/current/en/mod/mod_rewrite.html">Apache Module mod_rewrite</a></p>
+</li>
+<li>
+<p><a href="https://httpd.apache.org/docs/current/en/rewrite/flags.html#flag_r">Apache Module mod_rewrite: R|redirect</a></p>
+</li>
+<li>
+<p><a href="https://www.w3.org/TR/WCAG-TECHS/H76.html">H76: Using meta refresh to create an instant client-side redirect</a></p>
+</li>
+<li>
+<p><a href="https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20160317/SVR1">SVR1: Implementing automatic redirects on the server side instead of on the client side</a></p>
+</li>
+<li>
+<p><a href="http://php.net/manual/ja/function.header.php">http://php.net/manual/ja/function.header.php</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__16">実行環境</h3>
+<div class="listingblock">
+<div class="title">Debian 8.5</div>
+<div class="content">
+<pre class="highlight"><code>$ lsb_release -a
+No LSB modules are available.
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 8.5 (jessie)
+Release:	8.5
+Codename:	jessie</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Apache 2.4.10</div>
+<div class="content">
+<pre class="highlight"><code>$ /usr/sbin/apache2ctl -v
+Server version: Apache/2.4.10 (Debian)
+Server built:   Jul 20 2016 06:48:18</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+      </article>
+
+      <ul class="pager blog-pager">
+        
+        <li class="previous">
+          <a href="http://komatsutty.com/post/20160829/password-cracking-postgresql/" data-toggle="tooltip" data-placement="top" title="Password Cracking PostgreSQL">&larr; Previous Post</a>
+        </li>
+        
+        
+      </ul>
+
+      
+      <div class="disqus-comments">
+        <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'komatsutty';
+    var disqus_identifier = 'http:\/\/komatsutty.com\/post\/20160916\/url-redirection\/';
+    var disqus_title = 'URL Redirection';
+    var disqus_url = 'http:\/\/komatsutty.com\/post\/20160916\/url-redirection\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </div>
+      
+
+    </div>
+  </div>
+</div>
+
+      
+
+    </div>
+
+    <footer>
+  <div class="container beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+          
+          <li>
+            <a href="https://github.com/komatsutty" title="GitHub">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+          <li>
+            <a href="https://twitter.com/komatsutty" title="Twitter">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+		      
+		      
+	    	  
+          
+          
+
+    		  <li>
+      			<a href="http://komatsutty.com/index.xml" title="RSS">
+      			  <span class="fa-stack fa-lg">
+        				<i class="fa fa-circle fa-stack-2x"></i>
+        				<i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      			  </span>
+      			</a>
+    		  </li>		
+
+        </ul>
+        <p class="copyright text-muted">
+    		  komatsutty
+    		  &nbsp;&bull;&nbsp;
+    		  2016
+    		  
+    		  
+    		  &nbsp;&bull;&nbsp;
+    		  <a href="http://komatsutty.com/">komatsutty.com</a>
+    		  
+  	    </p>
+  	        
+    		<p class="theme-by text-muted">
+    		  Theme by
+    		  <a href="http://deanattali.com/beautiful-jekyll/">beautiful-jekyll</a>
+    		</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="http://komatsutty.com/js/jquery-1.11.2.min.js"></script>
+<script src="http://komatsutty.com/js/bootstrap.min.js"></script>
+<script src="http://komatsutty.com/js/main.js"></script>
+
+
+
+  </body>
+</html>
